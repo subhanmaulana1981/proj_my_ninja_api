@@ -36,7 +36,6 @@ class Layanan {
     if (response.statusCode == 200) {
       // print(response.body);
       final Ninja ninja = Ninja.fromJson(jsonDecode(response.body));
-
       return ninja;
     } else {
       throw Exception("Failed to load a Ninja");
@@ -44,26 +43,68 @@ class Layanan {
   }
 
   // method POST a ninja to db
-  Future<void> postNinja(
+  Future<void> postNinja (
     String name,
     String? rank,
     bool isAvailable
   ) async {
     Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninjas");
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     final response = await http.post(
       uriURL,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "name": "${name}",
-        "rank": "${rank}",
-        "available": "${isAvailable}"
+        "name": name,
+        "rank": "$rank",
+        "available": "$isAvailable"
       })
     );
     if (response.statusCode == 200) {
       print(response.body);
     } else {
       throw Exception("Failed to add a Ninja");
+    }
+  }
+
+  // method PUT a ninja
+  Future<Ninja> putNinja(
+      String stringID,
+      String stringName,
+      String? stringRank,
+      bool? isAvailable
+  ) async {
+    Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninjas/$stringID");
+    await Future.delayed(const Duration(seconds: 2));
+    final response = await http.put(
+      uriURL,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "name": stringName,
+        "rank": "$stringRank",
+        "available": "$isAvailable"
+      })
+    );
+    if (response.statusCode == 200) {
+      final Ninja ninja = Ninja.fromJson(jsonDecode(response.body));
+      print(ninja);
+      return ninja;
+    } else {
+      throw Exception("Failed to update the ninja");
+    }
+  }
+
+  // method to DELETE a ninja
+  Future<void> deleteNinja(String stringID) async {
+    Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninjas/$stringID");
+    await Future.delayed(const Duration(seconds: 2));
+    final response = await http.delete(
+      uriURL,
+      headers: {"Content-Type": "application/json"}
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+    } else {
+      throw Exception("Failed to delete a Ninja");
     }
   }
 

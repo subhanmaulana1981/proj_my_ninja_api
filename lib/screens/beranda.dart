@@ -12,7 +12,11 @@ class Beranda extends StatefulWidget {
 }
 
 class _BerandaState extends State<Beranda> {
+  // state management
   late List<Ninja> futureListNinjas;
+
+  // controller(s)
+  final TextEditingController _controllerCari = TextEditingController();
 
   @override
   void initState() {
@@ -22,6 +26,7 @@ class _BerandaState extends State<Beranda> {
 
   @override
   Widget build(BuildContext context) {
+    // state management
     futureListNinjas = Provider.of<List<Ninja>>(context, listen: true);
     String operationMode = "simpan";
     // print("build atas");
@@ -43,7 +48,13 @@ class _BerandaState extends State<Beranda> {
               ),
               IconButton(
                   onPressed: () {
-                    print("refresh..");
+                    print("refreshing..");
+                    // response notified
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Menyegarkan data..")
+                      ),
+                    );
                     Layanan().fetchNinjas().then((value) {
                       setState(() {
                         futureListNinjas = value;
@@ -57,34 +68,77 @@ class _BerandaState extends State<Beranda> {
 
         ],
       ),
-      body: FutureBuilder<List<Ninja>>(
-        future: Layanan().fetchNinjas(),
-        initialData: futureListNinjas,
-        builder: (BuildContext context, AsyncSnapshot<List<Ninja>> snapshot) {
-          futureListNinjas = snapshot.data!.toList();
-          if (snapshot.data!.isEmpty) {
-            return const Center(
-              child: Loading(),
-            );
-          }
+      body: Column(
+        children: <Widget>[
+          // pencarian
+          Form(
+            child: Row(
+              children: <Widget>[
+                const Expanded(
+                  flex: 1,
+                  child: Text("Yang diCari"),
+                ),
+                const SizedBox(
+                  width: 8.0,
+                ),
+                Expanded(
+                  flex: 4,
+                  child: TextFormField(
+                    controller: _controllerCari,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.search),
+                      hintText: "Cari Ninja di sini..",
+                      filled: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 8.0,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    child: const Icon(Icons.search),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(8.0),
-            physics: const ScrollPhysics(),
-            child: ListView.builder(
-              physics: const ScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: const Icon(Icons.person),
-                  title: Text(futureListNinjas[index].name.toString()),
-                  subtitle: Text(futureListNinjas[index].rank.toString()),
-                  trailing: Text("Is available? ${futureListNinjas[index].isAvailable}"),
-                  onTap: () {
-                    // method untuk fetching
-                    Layanan().fetchNinja(futureListNinjas[index].id.toString());
+          const SizedBox(
+            height: 8.0,
+          ),
 
-                    showDialog(
+          // grid list
+          FutureBuilder<List<Ninja>>(
+            future: Layanan().fetchNinjas(),
+            initialData: futureListNinjas,
+            builder: (BuildContext context, AsyncSnapshot<List<Ninja>> snapshot) {
+              futureListNinjas = snapshot.data!.toList();
+              if (snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Loading(),
+                );
+              }
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(8.0),
+                physics: const ScrollPhysics(),
+                child: ListView.builder(
+                  physics: const ScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      leading: const Icon(Icons.person),
+                      title: Text(futureListNinjas[index].name.toString()),
+                      subtitle: Text(futureListNinjas[index].rank.toString()),
+                      trailing: Text("Is available? ${futureListNinjas[index].isAvailable}"),
+                      onTap: () {
+                        // method untuk fetching
+                        Layanan().fetchNinja(futureListNinjas[index].id.toString());
+
+                        /*showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
@@ -112,37 +166,45 @@ class _BerandaState extends State<Beranda> {
                           actionsAlignment: MainAxisAlignment.center,
                         );
                       },
-                    );
+                    );*/
 
-                    Navigator.pushNamed(
-                      context,
-                      "/formNinja",
-                      arguments: Ninja(
-                        id: futureListNinjas[index].id.toString(),
-                        name: futureListNinjas[index].name.toString(),
-                        rank: futureListNinjas[index].rank.toString(),
-                        isAvailable: futureListNinjas[index].isAvailable,
-                        version: futureListNinjas[index].version,
-                        operationMode: "ubah"
-                      ),
-                    ).whenComplete(() {
-                      Layanan().fetchNinjas().then((value) {
-                        print("update..");
-                        setState(() {
-                          futureListNinjas = value;
-                          operationMode = "ubah";
+                        Navigator.pushNamed(
+                          context,
+                          "/formNinja",
+                          arguments: Ninja(
+                              id: futureListNinjas[index].id.toString(),
+                              name: futureListNinjas[index].name.toString(),
+                              rank: futureListNinjas[index].rank.toString(),
+                              isAvailable: futureListNinjas[index].isAvailable,
+                              version: futureListNinjas[index].version,
+                              operationMode: "ubah"
+                          ),
+                        ).whenComplete(() {
+                          Layanan().fetchNinjas().then((value) {
+                            print("update..");
+                            // response notified
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Berhasil diUbah..")
+                              ),
+                            );
+                            setState(() {
+                              futureListNinjas = value;
+                              operationMode = "ubah";
+                            });
+                          });
                         });
-                      });
-                    });
 
+                      },
+                      tileColor: (index.isEven) ? Colors.blueGrey[100] : Colors.transparent,
+                    );
                   },
-                  tileColor: (index.isEven) ? Colors.blueGrey[100] : Colors.transparent,
-                );
-              },
-              itemCount: futureListNinjas.length,
-            ),
-          );
-        },
+                  itemCount: futureListNinjas.length,
+                ),
+              );
+            },
+          )
+        ],
       ),
       floatingActionButton: ButtonBar(
         alignment: MainAxisAlignment.end,
@@ -163,7 +225,13 @@ class _BerandaState extends State<Beranda> {
               ).whenComplete(() {
                 // to refresh the grid
                 Layanan().fetchNinjas().then((value) {
-                  print("simpan..");
+                  // print("simpan..");
+                  // response notified
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Berhasil diSimpan..")
+                    ),
+                  );
                   setState(() {
                     futureListNinjas = value;
                     operationMode = "simpan";

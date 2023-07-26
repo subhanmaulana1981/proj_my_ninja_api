@@ -162,20 +162,30 @@ class _FormNinjaState extends State<FormNinja> {
                                   ],
                                 ),
                                 actions: <TextButton>[
+                                  // tidak tombol
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
                                     child: const Text("Tidak"),
                                   ),
+                                  // ya tombol
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pop(context);
+                                      // prepare
+                                      String id = _controllerID.toString();
+                                      // execute
+                                      Layanan().deleteNinja(id);
+                                      // postAction
+                                      Navigator.of(context).popUntil((route) {
+                                        return route.isFirst;
+                                      });
                                     },
                                     child: const Text("Ya"),
                                   ),
 
                                 ],
+                                actionsAlignment: MainAxisAlignment.center,
                               );
                             },
                           );
@@ -192,25 +202,20 @@ class _FormNinjaState extends State<FormNinja> {
                       // simpan tombol
                       ElevatedButton(
                         onPressed: () {
+                          // prepare
+                          String id = _controllerID.toString();
+                          String name = _controllerName.text;
+                          String rank = _controllerRank.text;
+                          bool available = _controllerIsAvailable;
+
                           // whether operation mode is toSave or toUpdate
                           if (ninja.operationMode.toString() == "simpan") {
-                            // prepare
-                            String name = _controllerName.text;
-                            String rank = _controllerRank.text;
-                            bool available = _controllerIsAvailable;
-
                             // execute
                             Layanan().postNinja(name, rank, available);
-
                           } else {
-                            // prepare
-
                             // execute
-
+                            Layanan().putNinja(id, name, rank, available);
                           }
-
-                          // state management
-
 
                           // postAction
                           Navigator.pop(context);
