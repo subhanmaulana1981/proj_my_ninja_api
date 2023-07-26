@@ -6,6 +6,7 @@ class Ninja {
   String? rank;
   bool? isAvailable = false;
   int? version;
+  String? operationMode = "simpan";
 
   // konstruktor
   Ninja({
@@ -13,7 +14,8 @@ class Ninja {
     this.name,
     this.rank,
     this.isAvailable,
-    this.version
+    this.version,
+    this.operationMode,
   });
 
   // dari string into object

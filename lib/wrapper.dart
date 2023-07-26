@@ -14,15 +14,16 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
-    return FutureProvider<Iterable<Ninja>>.value(
+    return FutureProvider<List<Ninja>>.value(
       value: Layanan().fetchNinjas(),
-      initialData: const [],
+      initialData: <Ninja>[],
       catchError: (BuildContext context, Object? listNinja) {
-        return [];
+        return <Ninja>[];
       },
       child: const Beranda(),
       updateShouldNotify: (previous, current) {
-        return current != previous;
+        bool shouldNotify = (current != previous);
+        return shouldNotify;
       },
 
     );
