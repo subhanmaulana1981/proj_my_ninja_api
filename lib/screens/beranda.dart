@@ -14,6 +14,9 @@ class Beranda extends StatefulWidget {
 class _BerandaState extends State<Beranda> {
   // state management
   late List<Ninja> futureListNinjas;
+  late String _refreshMode;
+  late String _operationMode;
+  late String _ninjaSearched;
 
   // controller(s)
   final TextEditingController _controllerCari = TextEditingController();
@@ -22,14 +25,22 @@ class _BerandaState extends State<Beranda> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    _refreshMode = "refreshing";
+    _operationMode = "toStart";
+    _ninjaSearched = "";
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     // state management
     futureListNinjas = Provider.of<List<Ninja>>(context, listen: true);
-    String operationMode = "simpan";
-    // print("build atas");
 
     return Scaffold(
       appBar: AppBar(
@@ -49,15 +60,18 @@ class _BerandaState extends State<Beranda> {
               IconButton(
                   onPressed: () {
                     print("refreshing..");
-                    // response notified
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Menyegarkan data..")
-                      ),
-                    );
                     Layanan().fetchNinjas().then((value) {
                       setState(() {
-                        futureListNinjas = value;
+                        _operationMode = "toRefresh";
+                        _refreshMode = "refreshing";
+                        _controllerCari.text = "";
+
+                        // response notified
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Menyegarkan data..")
+                          ),
+                        );
                       });
                     });
                   },
@@ -69,59 +83,89 @@ class _BerandaState extends State<Beranda> {
         ],
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.max,
+        // mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           // pencarian
-          Form(
-            child: Row(
-              children: <Widget>[
-                const Expanded(
-                  flex: 1,
-                  child: Text("Yang diCari"),
-                ),
-                const SizedBox(
-                  width: 8.0,
-                ),
-                Expanded(
-                  flex: 4,
-                  child: TextFormField(
-                    controller: _controllerCari,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: "Cari Ninja di sini..",
-                      filled: true,
+          Card(
+            elevation: 8.0,
+            margin: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(8.0),
+              physics: const ScrollPhysics(),
+              child: Form(
+                child: Row(
+                  children: <Widget>[
+                    // cari textBox
+                    Flexible(
+                      flex: 4,
+                      child: TextFormField(
+                        controller: _controllerCari,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.search),
+                          hintText: "Cari Ninja di sini..",
+                          filled: true,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 8.0,
-                ),
-                Expanded(
-                  flex: 1,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.search),
-                  ),
-                ),
-              ],
-            ),
-          ),
+                    const SizedBox(
+                      width: 8.0,
+                    ),
 
-          const SizedBox(
-            height: 8.0,
+                    // cari tombol
+                    Flexible(
+                      flex: 1,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          print("searching..");
+                          setState(() {
+                            _refreshMode = "searching";
+                            _ninjaSearched = _controllerCari.text;
+                          });
+                        },
+                        child: const Icon(Icons.search),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 8.0,
+                    ),
+
+                    // clear tombol
+                    Flexible(
+                      flex: 1,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // clearing
+                          print("clearing..");
+                          setState(() {
+                            _controllerCari.text = "";
+                            _refreshMode = "refreshing";
+                          });
+                        },
+                        child: const Icon(Icons.clear),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
 
           // grid list
           FutureBuilder<List<Ninja>>(
-            future: Layanan().fetchNinjas(),
+            future: (_refreshMode == "refreshing")
+              ? Layanan().fetchNinjas()
+              : Layanan().searchNinja(_controllerCari.text),
             initialData: futureListNinjas,
             builder: (BuildContext context, AsyncSnapshot<List<Ninja>> snapshot) {
+              print("building..");
+              // print("datanya: ${snapshot.data!.toList()}");
               futureListNinjas = snapshot.data!.toList();
               if (snapshot.data!.isEmpty) {
                 return const Center(
                   child: Loading(),
                 );
               }
-
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(8.0),
                 physics: const ScrollPhysics(),
@@ -177,21 +221,12 @@ class _BerandaState extends State<Beranda> {
                               rank: futureListNinjas[index].rank.toString(),
                               isAvailable: futureListNinjas[index].isAvailable,
                               version: futureListNinjas[index].version,
-                              operationMode: "ubah"
+                              operationMode: "toUpdate"
                           ),
                         ).whenComplete(() {
-                          Layanan().fetchNinjas().then((value) {
-                            print("update..");
-                            // response notified
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Berhasil diUbah..")
-                              ),
-                            );
-                            setState(() {
-                              futureListNinjas = value;
-                              operationMode = "ubah";
-                            });
+                          setState(() {
+                            _operationMode = "toUpdate";
+                            _refreshMode = "refreshing";
                           });
                         });
 
@@ -203,58 +238,51 @@ class _BerandaState extends State<Beranda> {
                 ),
               );
             },
-          )
-        ],
-      ),
-      floatingActionButton: ButtonBar(
-        alignment: MainAxisAlignment.end,
-        children: <ElevatedButton>[
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(
-                context,
-                "/formNinja",
-                arguments: Ninja(
-                  id: "",
-                  name: "",
-                  rank: "",
-                  isAvailable: false,
-                  version: 0,
-                  operationMode: "simpan"
-                ),
-              ).whenComplete(() {
-                // to refresh the grid
-                Layanan().fetchNinjas().then((value) {
-                  // print("simpan..");
-                  // response notified
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Berhasil diSimpan..")
+          ),
+
+          ButtonBar(
+            alignment: MainAxisAlignment.end,
+            children: <ElevatedButton>[
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    "/formNinja",
+                    arguments: Ninja(
+                        id: "",
+                        name: "",
+                        rank: "",
+                        isAvailable: false,
+                        version: 0,
+                        operationMode: "toSave"
                     ),
-                  );
-                  setState(() {
-                    futureListNinjas = value;
-                    operationMode = "simpan";
+                  ).whenComplete(() {
+                    // to refresh the grid
+                    setState(() {
+                      _operationMode = "toSave";
+                      _refreshMode = "refreshing";
+                    });
                   });
-                });
-              });
-            },
-            child: const Row(
-              children: <Widget>[
-                Icon(Icons.add),
-                SizedBox(
-                  width: 8.0,
+                },
+                child: const Row(
+                  children: <Widget>[
+                    Icon(Icons.add),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    Text("Tambah anggota ninja"),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    Icon(Icons.person),
+                  ],
                 ),
-                Text("Tambah anggota ninja"),
-                SizedBox(
-                  width: 8.0,
-                ),
-                Icon(Icons.person),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
+      resizeToAvoidBottomInset: false,
     );
   }
 }

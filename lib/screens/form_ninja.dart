@@ -13,11 +13,11 @@ class FormNinja extends StatefulWidget {
 
 class _FormNinjaState extends State<FormNinja> {
   // controller(s)
-  late String _controllerID = "";
-  final TextEditingController _controllerName = TextEditingController();
-  final TextEditingController _controllerRank = TextEditingController();
-  bool _controllerIsAvailable = false;
-  late int _controllerVersion = 0;
+  late String _controllerID;
+  late final TextEditingController _controllerName = TextEditingController();
+  late final TextEditingController _controllerRank = TextEditingController();
+  late bool _controllerIsAvailable;
+  late int _controllerVersion;
 
   @override
   void initState() {
@@ -42,6 +42,13 @@ class _FormNinjaState extends State<FormNinja> {
       _controllerRank.text = ninja.rank.toString();
       _controllerIsAvailable = ninja.isAvailable!;
       _controllerVersion = ninja.version!;
+    } else {
+      _controllerID = "";
+      _controllerName.text = "";
+      _controllerRank.text = "";
+      _controllerIsAvailable = false;
+      _controllerVersion = 0;
+
     }
 
     return Scaffold(
@@ -107,24 +114,6 @@ class _FormNinjaState extends State<FormNinja> {
                     height: 8.0,
                   ),
 
-                  // is available?
-                  /*Row(
-                    children: <Widget>[
-                      Checkbox(
-                        value: _controllerIsAvailable,
-                        onChanged: (bool? newValue) {
-                          setState(() {
-                            _controllerIsAvailable = newValue!;
-                          });
-                        },
-                      ),
-                      const SizedBox(
-                        width: 8.0,
-                      ),
-                      const Text("Is available here?"),
-                    ],
-                  ),*/
-
                   CheckboxListTile(
                     value: _controllerIsAvailable,
                     onChanged: (bool? newValue) {
@@ -172,10 +161,8 @@ class _FormNinjaState extends State<FormNinja> {
                                   // ya tombol
                                   TextButton(
                                     onPressed: () {
-                                      // prepare
-                                      String id = _controllerID.toString();
                                       // execute
-                                      Layanan().deleteNinja(id);
+                                      Layanan().deleteNinja(_controllerID);
                                       // postAction
                                       Navigator.of(context).popUntil((route) {
                                         return route.isFirst;
@@ -202,19 +189,22 @@ class _FormNinjaState extends State<FormNinja> {
                       // simpan tombol
                       ElevatedButton(
                         onPressed: () {
-                          // prepare
-                          String id = _controllerID.toString();
-                          String name = _controllerName.text;
-                          String rank = _controllerRank.text;
-                          bool available = _controllerIsAvailable;
-
                           // whether operation mode is toSave or toUpdate
-                          if (ninja.operationMode.toString() == "simpan") {
+                          if (ninja.operationMode.toString() == "toSave") {
                             // execute
-                            Layanan().postNinja(name, rank, available);
+                            Layanan().postNinja(
+                              _controllerName.text,
+                              _controllerRank.text,
+                              _controllerIsAvailable
+                            );
                           } else {
                             // execute
-                            Layanan().putNinja(id, name, rank, available);
+                            Layanan().putNinja(
+                              _controllerID,
+                              _controllerName.text,
+                              _controllerRank.text,
+                              _controllerIsAvailable
+                            );
                           }
 
                           // postAction
