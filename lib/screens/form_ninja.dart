@@ -23,6 +23,13 @@ class _FormNinjaState extends State<FormNinja> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    _controllerID = "";
+    _controllerName.text = "";
+    _controllerRank.text = "";
+    _controllerIsAvailable = false;
+    _controllerVersion = 0;
+
   }
 
   @override
@@ -42,13 +49,6 @@ class _FormNinjaState extends State<FormNinja> {
       _controllerRank.text = ninja.rank.toString();
       _controllerIsAvailable = ninja.isAvailable!;
       _controllerVersion = ninja.version!;
-    } else {
-      _controllerID = "";
-      _controllerName.text = "";
-      _controllerRank.text = "";
-      _controllerIsAvailable = false;
-      _controllerVersion = 0;
-
     }
 
     return Scaffold(
@@ -114,16 +114,24 @@ class _FormNinjaState extends State<FormNinja> {
                     height: 8.0,
                   ),
 
-                  CheckboxListTile(
-                    value: _controllerIsAvailable,
-                    onChanged: (bool? newValue) {
-                      setState(() {
-                        _controllerIsAvailable = newValue!;
-                      });
+                  // isAvailable
+                  StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return CheckboxListTile(
+                        value: _controllerIsAvailable,
+                        onChanged: (bool? newValue) {
+                          setState(() {
+                            _controllerIsAvailable = newValue!;
+                          });
+                        },
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        title: const Text("Is available"),
+                        subtitle: const Text("Is the hero is available here"),
+                        tileColor: Theme.of(context).listTileTheme.tileColor,
+                        checkColor: Colors.blue,
+                        dense: true,
+                      );
                     },
-                    title: const Text("Is available"),
-                    subtitle: const Text("Is the hero is available here"),
-                    checkColor: Colors.blue,
                   ),
 
                   const SizedBox(

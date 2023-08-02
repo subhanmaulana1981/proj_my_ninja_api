@@ -32,11 +32,11 @@ class Ninja {
   // dari object into string (stringify)
   Map<String, dynamic> toMap() {
     return {
-      "__id": id,
+      "_id": id,
       "name": name,
       "rank": rank,
       "available": isAvailable,
-      "v": version
+      "__v": version
     };
   }
 
