@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:proj_my_ninja_api/screens/beranda.dart';
 import 'package:proj_my_ninja_api/screens/form_ninja.dart';
 import 'package:proj_my_ninja_api/wrapper.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class MyNinjaAPIApp extends StatelessWidget {
   const MyNinjaAPIApp({super.key});
@@ -13,15 +15,16 @@ class MyNinjaAPIApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const Wrapper(),
+      home: Wrapper(),
       routes: {
         "/beranda": (context) {
-          return const Beranda();
+          return Beranda();
         },
         "/formNinja": (context) {
           return const FormNinja();
         },
       },
+      debugShowCheckedModeBanner: false,
     );
   }
 }

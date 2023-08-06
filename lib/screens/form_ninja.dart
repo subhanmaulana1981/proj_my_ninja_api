@@ -18,6 +18,7 @@ class _FormNinjaState extends State<FormNinja> {
   late final TextEditingController _controllerRank = TextEditingController();
   late bool _controllerIsAvailable;
   late int _controllerVersion;
+  late String _controllerOperationMode;
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _FormNinjaState extends State<FormNinja> {
     _controllerRank.text = "";
     _controllerIsAvailable = false;
     _controllerVersion = 0;
-
+    _controllerOperationMode = "";
   }
 
   @override
@@ -42,13 +43,14 @@ class _FormNinjaState extends State<FormNinja> {
   Widget build(BuildContext context) {
     // to hold parameter(s) received
     final ninja = ModalRoute.of(context)!.settings.arguments as Ninja;
-    print("operation mode: ${ninja.operationMode.toString()}");
+    // print("operation mode: ${ninja.operationMode.toString()}");
     if (ninja.id.toString() != "") {
       _controllerID = ninja.id.toString();
       _controllerName.text = ninja.name.toString();
       _controllerRank.text = ninja.rank.toString();
       _controllerIsAvailable = ninja.isAvailable!;
       _controllerVersion = ninja.version!;
+      _controllerOperationMode = ninja.operationMode!;
     }
 
     return Scaffold(

@@ -5,8 +5,8 @@ class Ninja {
   String? name;
   String? rank;
   bool? isAvailable = false;
-  int? version;
-  String? operationMode = "simpan";
+  late int? version;
+  late String? operationMode;
 
   // konstruktor
   Ninja({
