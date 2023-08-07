@@ -17,24 +17,11 @@ class Wrapper extends StatefulWidget {
 }
 
 class _WrapperState extends State<Wrapper> {
-  /*final _channel = WebSocketChannel.connect(
-    Uri.parse("wss://echo.websocket.events"),
-  );*/
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    // Dart client
-    /*IO.Socket socket = IO.io('http://10.0.2.2:4000');
-    socket.onConnect((_) {
-      print('connect');
-      socket.emit('msg', 'test');
-    });
-    socket.on('event', (data) => print(data));
-    socket.onDisconnect((_) => print('disconnect'));
-    socket.on('fromServer', (_) => print(_));*/
   }
 
   @override

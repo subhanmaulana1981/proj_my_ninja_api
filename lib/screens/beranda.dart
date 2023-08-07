@@ -171,7 +171,6 @@ class _BerandaState extends State<Beranda> {
               );
             },
           ),
-
         ],
       ),
       body: SingleChildScrollView(
