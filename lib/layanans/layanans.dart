@@ -5,8 +5,8 @@ import 'package:proj_my_ninja_api/models/ninja.dart';
 class Layanan {
   // method to GET all ninjas
   Future<List<Ninja>> fetchNinjas() async {
-    // Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninjas");
-    Uri uriURL = Uri.http("10.0.2.2:4000", "/api/ninjas");
+    // Uri uriURL = Uri.http("154.56.39.55:5000", "/api/ninjas");
+    Uri uriURL = Uri.http("10.0.2.2:5000", "/api/ninjas");
     await Future.delayed(const Duration(seconds: 2));
     final response = await http.get(uriURL, headers: {
       "Content-Type": "application/json",
@@ -28,8 +28,8 @@ class Layanan {
   
   // method to GET a (one) ninja
   Future<Ninja> fetchNinja(String stringID) async {
-    // Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninja/$stringID");
-    Uri uriURL = Uri.http("10.0.2.2:4000", "/api/ninja/$stringID");
+    // Uri uriURL = Uri.http("154.56.39.55:5000", "/api/ninja/$stringID");
+    Uri uriURL = Uri.http("10.0.2.2:5000", "/api/ninja/$stringID");
 
     await Future.delayed(const Duration(seconds: 2));
     final response = await http.get(uriURL, headers: {
@@ -47,12 +47,13 @@ class Layanan {
   // search to GET a ninja
   Future<List<Ninja>> searchNinja(String stringName) async {
     /*Uri uriURL = Uri.http(
-      "154.56.39.55:4000",
+      "154.56.39.55:5000",
       "/api/ninja",
       {"name": stringName}
     );*/
+
     Uri uriURL = Uri.http(
-        "10.0.2.2:4000",
+        "10.0.2.2:5000",
         "/api/ninja",
         {"name": stringName}
     );
@@ -84,8 +85,8 @@ class Layanan {
     String? rank,
     bool isAvailable
   ) async {
-    // Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninja");
-    Uri uriURL = Uri.http("10.0.2.2:4000", "/api/ninja");
+    // Uri uriURL = Uri.http("154.56.39.55:5000", "/api/ninja");
+    Uri uriURL = Uri.http("10.0.2.2:5000", "/api/ninja");
 
     await Future.delayed(const Duration(seconds: 2));
     final response = await http.post(
@@ -111,8 +112,8 @@ class Layanan {
       String? stringRank,
       bool? isAvailable
   ) async {
-    // Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninja/$stringID");
-    Uri uriURL = Uri.http("10.0.2.2:4000", "/api/ninja/$stringID");
+    // Uri uriURL = Uri.http("154.56.39.55:5000", "/api/ninja/$stringID");
+    Uri uriURL = Uri.http("10.0.2.2:5000", "/api/ninja/$stringID");
     await Future.delayed(const Duration(seconds: 2));
     final response = await http.put(
       uriURL,
@@ -134,8 +135,8 @@ class Layanan {
 
   // method to DELETE a ninja
   Future<void> deleteNinja(String stringID) async {
-    // Uri uriURL = Uri.http("154.56.39.55:4000", "/api/ninja/$stringID");
-    Uri uriURL = Uri.http("10.0.2.2:4000", "/api/ninja/$stringID");
+    // Uri uriURL = Uri.http("154.56.39.55:5000", "/api/ninja/$stringID");
+    Uri uriURL = Uri.http("10.0.2.2:5000", "/api/ninja/$stringID");
 
     await Future.delayed(const Duration(seconds: 2));
     final response = await http.delete(

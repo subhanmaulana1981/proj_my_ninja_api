@@ -4,7 +4,6 @@ import 'package:proj_my_ninja_api/models/ninja.dart';
 import 'package:proj_my_ninja_api/screens/beranda.dart';
 import 'package:provider/provider.dart';
 // import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Wrapper extends StatefulWidget {
   // final WebSocketChannel channel;

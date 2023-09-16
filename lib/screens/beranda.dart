@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:proj_my_ninja_api/layanans/layanans.dart';
 import 'package:proj_my_ninja_api/layanans/stream_socket.dart';
 import 'package:proj_my_ninja_api/models/ninja.dart';
+import 'package:proj_my_ninja_api/models/pelayan.data.dart';
 import 'package:proj_my_ninja_api/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:badges/badges.dart' as badges;
-/*import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
-import 'package:web_socket_channel/io.dart';*/
 
 class Beranda extends StatefulWidget {
   const Beranda({super.key});
@@ -27,54 +25,53 @@ class _BerandaState extends State<Beranda> {
   // controller(s)
   final TextEditingController _controllerCari = TextEditingController();
 
-  // koneksi ke ws
-  /*final WebSocketChannel _channel = WebSocketChannel.connect(
-    Uri.parse("ws://10.0.2.2:4000"),
-  );*/
-
-  /*final WebSocketChannel _channel = WebSocketChannel.connect(
-    Uri.parse("wss://s9712.sgp1.piesocket.com/v3/1?api_key=nKYjkPApJKEBt6LbAonsI4x4ykAICQzyDBV91ux4&notify_self=1"),
-  );*/
-
   late StreamSocket _streamSocket;
   late Stream<String> _streamNinja;
 
-  // IO.Socket socket = IO.io("http://10.0.2.2:4000");
-  IO.Socket socket = IO.io(
-    'http://10.0.2.2:4000',
+  /*IO.Socket socket = IO.io(
+    'http://10.0.2.2:5000',
     IO.OptionBuilder()
       .setTransports(['websocket'])
       .disableAutoConnect()
       .build()
-  );
+  );*/
 
-  void connectAndListen() {
+  /*IO.Socket socket = IO.io(
+      'http://154.56.39.55:5000',
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .build());*/
+
+  /*void connectAndListen() {
     socket.connect();
 
     socket.onConnect((_) {
       print('connecting');
-      socket.emit('connection', 'hai');
+      socket.emit('connection', {"nama": "subhan", "lokasi": "setu-bekasi"});
     });
 
-    /* listener untuk hubungan */
-    socket.on("hubungan", (data) {
-      print("server response: $data");
-      _streamSocket.addResponse(data);
+    *//* listener untuk hubungan *//*
+    socket.on("connection", (data) {
+      Pelayan pelayan = Pelayan.fromJson(data);
+      print("nama: ${pelayan.nama}, lokasi: ${pelayan.lokasi}");
+
+      //_streamSocket.addResponse(data);
     });
 
-    /* listener untuk pesan */
+    *//* listener untuk pesan *//*
     socket.on("pesan", (data) {
       print("pesan dari server: $data");
       _streamSocket.addResponse(data);
     });
 
     socket.onDisconnect((_) => print('disconnect'));
-  }
-  
-  void sendingMessage(String stringMessage) {
+  }*/
+
+  /*void sendingMessage(String stringMessage) {
     socket.emit("pesan", stringMessage);
     _streamSocket.addResponse(stringMessage);
-  }
+  }*/
 
   @override
   void initState() {
@@ -87,7 +84,7 @@ class _BerandaState extends State<Beranda> {
     _ninjaSearched = "";
 
     _streamSocket = StreamSocket();
-    connectAndListen();
+    // connectAndListen();
     setState(() {
       _streamNinja = _streamSocket.getResponse;
     });
@@ -122,6 +119,7 @@ class _BerandaState extends State<Beranda> {
               const SizedBox(
                 width: 8.0,
               ),
+
               IconButton(
                   onPressed: () {
                     // print("refreshing..");
@@ -133,15 +131,12 @@ class _BerandaState extends State<Beranda> {
 
                         // response notified
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Menyegarkan data..")
-                          ),
+                          const SnackBar(content: Text("Menyegarkan data..")),
                         );
                       });
                     });
                   },
-                  icon: const Icon(Icons.refresh)
-              )
+                  icon: const Icon(Icons.refresh))
             ],
           ),
 
@@ -150,19 +145,11 @@ class _BerandaState extends State<Beranda> {
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               print("data dari snapshot ${snapshot.data.toString()}");
               return badges.Badge(
-                badgeContent: Text(
-                  /*(snapshot.data.toString() == "1")
-                    ? snapshot.data.toString()
-                    : ""*/
-                  snapshot.data.toString()
-                ),
+                badgeContent: Text(snapshot.data.toString()),
                 badgeStyle: const badges.BadgeStyle(
                   badgeColor: Colors.yellow,
                 ),
-                position: badges.BadgePosition.topEnd(
-                    top: 1,
-                    end: 1
-                ),
+                position: badges.BadgePosition.topEnd(top: 1, end: 1),
                 stackFit: StackFit.loose,
                 child: IconButton(
                   onPressed: () {},
@@ -201,10 +188,12 @@ class _BerandaState extends State<Beranda> {
                           ),
                         ),
                       ),
+
                       const SizedBox(
                         width: 8.0,
                       ),
 
+                      // toSearch
                       Flexible(
                         flex: 1,
                         child: IconButton(
@@ -219,12 +208,11 @@ class _BerandaState extends State<Beranda> {
                         ),
                       ),
 
+                      // toClear
                       Flexible(
                         flex: 1,
                         child: IconButton(
                           onPressed: () {
-                            // clearing
-                            // print("clearing..");
                             setState(() {
                               _controllerCari.text = "";
                               _refreshMode = "refreshing";
@@ -233,7 +221,6 @@ class _BerandaState extends State<Beranda> {
                           icon: const Icon(Icons.clear),
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -243,8 +230,8 @@ class _BerandaState extends State<Beranda> {
             // grid list
             FutureBuilder<List<Ninja>>(
               future: (_refreshMode == "refreshing")
-                ? Layanan().fetchNinjas()
-                : Layanan().searchNinja(_controllerCari.text),
+                  ? Layanan().fetchNinjas()
+                  : Layanan().searchNinja(_controllerCari.text),
               initialData: futureListNinjas,
               builder: (BuildContext context, AsyncSnapshot<List<Ninja>> snapshot) {
                 if (snapshot.hasData || snapshot.data != null) {
@@ -264,7 +251,8 @@ class _BerandaState extends State<Beranda> {
                           trailing: Text("Is available? ${futureListNinjas[index].isAvailable}"),
                           onTap: () {
                             // method untuk fetching
-                            Layanan().fetchNinja(futureListNinjas[index].id.toString());
+                            Layanan().fetchNinja(
+                                futureListNinjas[index].id.toString());
 
                             Navigator.pushNamed(
                               context,
@@ -275,18 +263,17 @@ class _BerandaState extends State<Beranda> {
                                   rank: futureListNinjas[index].rank.toString(),
                                   isAvailable: futureListNinjas[index].isAvailable,
                                   version: futureListNinjas[index].version,
-                                  operationMode: "toUpdate"
-                              ),
+                                  operationMode: "toUpdate"),
                             ).whenComplete(() {
                               setState(() {
                                 _operationMode = "toUpdate";
                                 _refreshMode = "refreshing";
                               });
-
                             });
-
                           },
-                          tileColor: (index.isEven) ? Colors.blueGrey[100] : Colors.transparent,
+                          tileColor: (index.isEven)
+                              ? Colors.blueGrey[100]
+                              : Colors.transparent,
                         );
                       },
                       itemCount: futureListNinjas.length,
@@ -297,10 +284,10 @@ class _BerandaState extends State<Beranda> {
                 return const Center(
                   child: Loading(),
                 );
-
               },
             ),
 
+            // tombol operasi
             ButtonBar(
               alignment: MainAxisAlignment.end,
               children: <ElevatedButton>[
@@ -317,11 +304,10 @@ class _BerandaState extends State<Beranda> {
                           rank: "",
                           isAvailable: false,
                           version: 0,
-                          operationMode: "toSave"
-                      ),
+                          operationMode: "toSave"),
                     ).whenComplete(() {
                       // sending message to ws
-                      sendingMessage("add");
+                      // sendingMessage("add");
 
                       // to refresh the grid
                       setState(() {
@@ -354,4 +340,3 @@ class _BerandaState extends State<Beranda> {
     );
   }
 }
-
