@@ -34,12 +34,6 @@ class _FormNinjaState extends State<FormNinja> {
   }
 
   @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     // to hold parameter(s) received
     final ninja = ModalRoute.of(context)!.settings.arguments as Ninja;
