@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:proj_my_ninja_api/layanans/layanans.dart';
 import 'package:proj_my_ninja_api/layanans/stream_socket.dart';
 import 'package:proj_my_ninja_api/models/ninja.dart';
-import 'package:proj_my_ninja_api/models/pelayan.data.dart';
+// import 'package:proj_my_ninja_api/models/pelayan.data.dart';
 import 'package:proj_my_ninja_api/widgets/loading.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+// import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:badges/badges.dart' as badges;
 
 class Beranda extends StatefulWidget {
@@ -25,8 +25,8 @@ class _BerandaState extends State<Beranda> {
   // controller(s)
   final TextEditingController _controllerCari = TextEditingController();
 
-  late StreamSocket _streamSocket;
-  late Stream<String> _streamNinja;
+  // late StreamSocket _streamSocket;
+  // late Stream<String> _streamNinja;
 
   /*IO.Socket socket = IO.io(
     'http://10.0.2.2:5000',
@@ -83,18 +83,18 @@ class _BerandaState extends State<Beranda> {
     _operationMode = "toStart";
     _ninjaSearched = "";
 
-    _streamSocket = StreamSocket();
+    // _streamSocket = StreamSocket();
     // connectAndListen();
-    setState(() {
+    /*setState(() {
       _streamNinja = _streamSocket.getResponse;
-    });
+    });*/
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     // _channel.sink.close();
-    _streamSocket.dispose();
+    // _streamSocket.dispose();
     super.dispose();
   }
 
@@ -140,7 +140,7 @@ class _BerandaState extends State<Beranda> {
             ],
           ),
 
-          StreamBuilder(
+          /*StreamBuilder(
             stream: _streamNinja,
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               print("data dari snapshot ${snapshot.data.toString()}");
@@ -157,7 +157,7 @@ class _BerandaState extends State<Beranda> {
                 ),
               );
             },
-          ),
+          ),*/
         ],
       ),
       body: SingleChildScrollView(
@@ -313,7 +313,7 @@ class _BerandaState extends State<Beranda> {
                       setState(() {
                         _operationMode = "toSave";
                         _refreshMode = "refreshing";
-                        _streamNinja = _streamSocket.getResponse;
+                        // _streamNinja = _streamSocket.getResponse;
                       });
                     });
                   },
