@@ -12,6 +12,7 @@ class StreamSocket {
   Stream<String> get getResponse {
     try {
       return _streamController.stream;
+
     } catch(err) {
       throw Exception(err);
     }
